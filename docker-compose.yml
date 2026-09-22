@@ -1,0 +1,43 @@
+services:
+  backend:
+    build: ./backend
+    # Exposta ao host de proposito: o frontend hoje fala direto com o backend nessa porta
+    # (VITE_API_URL), sem passar pelo Nginx do frontend. Um deploy real atras de proxy/ingress
+    # proprio deveria trocar VITE_API_URL pelo dominio publico do backend e parar de publicar
+    # essa porta aqui -- nao fizemos essa mudanca de rede agora pra nao arriscar quebrar o
+    # carregamento de assets (logo/uploads) sem poder validar o build Docker de ponta a ponta.
+    ports:
+      - "8000:8000"
+    environment:
+      # Opcional -- se nao definir JWT_SECRET/ENCRYPTION_KEY num .env, o backend gera os dois
+      # sozinho no primeiro boot e persiste em /app/data (ver core/bootstrap_secrets.py), pra
+      # `docker compose up -d` funcionar sem configuracao previa. Defina aqui (ou num .env) so
+      # se quiser controlar o valor voce mesmo.
+      JWT_SECRET: ${JWT_SECRET:-}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-}
+      CORS_ORIGINS: http://localhost:5173
+    volumes:
+      - backend_data:/app/data
+      - backend_uploads:/app/static/uploads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  backend_data:
+  backend_uploads:
