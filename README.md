@@ -10,7 +10,7 @@ Power BI.
 Requisitos: [Docker](https://docs.docker.com/get-docker/) e [Docker Compose](https://docs.docker.com/compose/install/).
 
 ```bash
-git clone https://github.com/SEU_USUARIO/pbihoster.git
+git clone https://github.com/armandonettox/pbihoster.git
 cd pbihoster
 docker compose up -d
 ```
