@@ -5,6 +5,8 @@ usuários, controle de acesso por grupo e embedding via "app owns the data" (Ser
 do Azure AD) — os usuários acessam os relatórios sem precisar de licença/conta própria no
 Power BI.
 
+![Demonstração do PBIHoster](docs/demo.gif)
+
 ## Instalação (Docker)
 
 Requisitos: [Docker](https://docs.docker.com/get-docker/) e [Docker Compose](https://docs.docker.com/compose/install/).
